@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add User</title>
+    <script>
+        function addUser() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            fetch('http://localhost:8080/addUser', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+                body: JSON.stringify({username: username, password: password})
+            }).then(response => {
+                if (response.ok) {
+                    alert("User added successfully.");
+                    window.location.href = 'login.html';
+                } else {
+                    alert("Error adding User.");
+                }
+            }).catch(error  => {
+                console.error("Error: ", error);
+            });
+        }
+
+        function togglePassword() {
+            var passwordField = document.getElementById("password");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+            } else {
+                passwordField.type = "password";
+            }
+        }
+
+        function back() {
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body>
+    <h2>Add User</h2>
+    <input type="text" id="username" placeholder="Username"><br>
+    <input type="password" id="password" placeholder="Password"><br>
+    <input type="checkbox" onclick="togglePassword()">Show Password<br>
+    <button onclick="addUser()">Add User</button>
+    <button onclick="back()">Back to Login</button>
+</body>
+</html>
