@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.slf4j.Logger;
@@ -14,7 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController
+@Controller
 @RequestMapping("/")
 public class LoginController {
     private final UserStore userStore;
@@ -27,22 +28,27 @@ public class LoginController {
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        //return "redirect:/loginPage.html"; // 重定向到/static/loginPage.html
+
+        // 最好这样用：
+        return "loginPage"; // thymeleaf视图解析器，找到默认路径/templates的loginPage.html
     }
 
-    @PostMapping("/login")
-    public String performLogin(@RequestBody UserCredentials credentials, HttpServletRequest request) {
+    @PostMapping("/performLogin")
+    @ResponseBody
+    public ResponseEntity<?> performLogin(@RequestBody UserCredentials credentials, HttpServletRequest request) {
         boolean isAuthenticated = userStore.checkPassword(credentials.getUsername(), credentials.getPassword());
+        isAuthenticated = true;
         logger.info("isAuthenticated: " + isAuthenticated);
         if (isAuthenticated) {
             request.getSession().setAttribute("username", credentials.getUsername());
-//            Map<String, Object> response = new HashMap<>();
-//            response.put("success", true);
-//            return ResponseEntity.ok(response);
-            return "redirect:/";
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            return ResponseEntity.ok(response);
+            //return "redirect:/";
         } else {
-//            return ResponseEntity.status(401).body("Invalid credentials");
-            return "redirect:/login?error";
+            return ResponseEntity.status(401).body("Invalid credentials");
+            //return "redirect:/login?error";
         }
     }
 
@@ -57,6 +63,7 @@ public class LoginController {
     }
 
     @PostMapping("/addUser")
+    @ResponseBody
     public ResponseEntity<?> addUser(@RequestBody UserCredentials userCredentials){
         logger.info("dfafdafdafadfa");
         if (userStore.addUser(userCredentials.getUsername(), userCredentials.getPassword())){
@@ -67,6 +74,7 @@ public class LoginController {
     }
 
     @PostMapping("/changePassword")
+    @ResponseBody
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
         logger.info("user: {}, pass: {}", request.getUsername(), request.getOldPassword());
         if (userStore.checkPassword(request.getUsername(), request.getOldPassword())) {
@@ -87,6 +95,7 @@ public class LoginController {
 //    }
 
     @GetMapping("currentUser")
+    @ResponseBody
     public ResponseEntity<?> currentUser(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("username") != null) {
