@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+    <script>
+        // window.onload = function () {
+        //     var isLoggedIn = localStorage.getItem("isLoggedIn");
+        //     if (!isLoggedIn) {
+        //         window.location.href = 'login.html';
+        //     }
+        // }
+
+        function getCurrentUser() {
+            fetch('http://localhost:8080/currentUser')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.username) {
+                        document.getElementById("currentUser").innerText = "Welcome, " + data.username;
+                    }
+                }).catch(error => {
+                    window.location.href = 'login.html';
+            });
+        }
+
+        function logout() {
+            fetch('http://localhost:8080/logout')
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = 'login.html';
+                    }
+                });
+        }
+
+        function goToTest() {
+            window.location.href = "test.html";
+        }
+
+        window.onload = getCurrentUser;
+    </script>
+</head>
+<body>
+    <h1 id="currentUser">Welcome!</h1>
+    <form action="/logout" method="post">
+        <button type="submit">Logout</button>
+    </form>
+    <button onclick="goToTest()">Test</button>
+</body>
+</html>

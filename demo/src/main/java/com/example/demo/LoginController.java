@@ -29,6 +29,7 @@ public class LoginController {
     @GetMapping("/login")
     public String login() {
         //return "redirect:/loginPage.html"; // 重定向到/static/loginPage.html
+        logger.info("login");
 
         // 最好这样用：
         return "loginPage"; // thymeleaf视图解析器，找到默认路径/templates的loginPage.html
@@ -38,7 +39,7 @@ public class LoginController {
     @ResponseBody
     public ResponseEntity<?> performLogin(@RequestBody UserCredentials credentials, HttpServletRequest request) {
         boolean isAuthenticated = userStore.checkPassword(credentials.getUsername(), credentials.getPassword());
-        isAuthenticated = true;
+//        isAuthenticated = true;
         logger.info("isAuthenticated: " + isAuthenticated);
         if (isAuthenticated) {
             request.getSession().setAttribute("username", credentials.getUsername());
@@ -94,7 +95,7 @@ public class LoginController {
 //        return ResponseEntity.ok("Logged out successfully");
 //    }
 
-    @GetMapping("currentUser")
+    @GetMapping("/currentUser")
     @ResponseBody
     public ResponseEntity<?> currentUser(HttpServletRequest request) {
         HttpSession session = request.getSession(false);

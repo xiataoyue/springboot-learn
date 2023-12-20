@@ -39,6 +39,7 @@ public class UserStore {
 
     public boolean checkPassword(String username, String password) {
         String storedHash = userCredentials.get(username);
+        logger.info("check password for {}: {}", username, storedHash != null);
         return storedHash != null && BCrypt.checkpw(password, storedHash);
     }
 
@@ -51,6 +52,7 @@ public class UserStore {
     }
 
     private void saveCredentials() {
+        logger.info("saveCredentials.");
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
             oos.writeObject(userCredentials);
         } catch (IOException e) {
